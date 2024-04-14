@@ -1,0 +1,24 @@
+{% load humanize %}
+{% load main %}
+
+{% if user.is_authenticated %}
+    <div id="star_rating" class="meta pull-left">
+        {% cal_stars product.stars as stars_avg %}
+        <p>میانگین امتیازات : {{ stars_avg }}</p>
+        <p class="center-align stars">
+            {% cal_online_user_stars product user as user_rate %}
+            {% with ''|center:5 as stars_range %}
+                {% for item in stars_range %}
+                    <span onclick="Rate_Star({{ forloop.counter }})"
+                          class="stars_hover icon-star {% if forloop.counter <= user_rate %} stars-clr {% endif %}"></span>
+                {% endfor %}
+            {% endwith %}
+        </p>
+    </div>
+{% endif %}
+
+<style rel="stylesheet">
+    span:hover {
+        cursor: pointer;
+    }
+</style>

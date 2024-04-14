@@ -1,0 +1,525 @@
+{% extends 'front/layouts/app.html' %}
+{% load humanize %}
+{% load main %}
+
+{% block title %} محصول {{ product.title }} {% endblock %}
+
+{% block content %}
+    <div class="darker-stripe">
+        <div class="container">
+            <div class="row">
+                <div class="span12">
+                    <ul class="breadcrumb">
+                        <li><span class="icon-chevron-right"></span></li>
+                        <li>
+                            <a href="/">فروشگاه</a>
+                        </li>
+                        <li><span class="icon-chevron-right"></span></li>
+                        <li>
+                            <a href="/products">محصولات</a>
+                        </li>
+                        <li><span class="icon-chevron-right"></span></li>
+                        <li>
+                            {{ product.title }}
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!--  ==========  -->
+    <!--  = Main container =  -->
+    <!--  ==========  -->
+    <div class="container">
+        <div class="push-up top-equal blocks-spacer">
+
+            <div class="row blocks-spacer">
+
+                <div class="span5">
+                    <div class="product-preview">
+                        <div class="picture">
+                            <img src="{{ product.original_image.url }}" alt="{{ product.title }}" width="940"
+                                 height="940"
+                                 id="mainPreviewImg"/>
+                        </div>
+                        <div class="thumbs clearfix">
+
+                            {% for item in images %}
+                                <div class="thumb active">
+                                    <a href="#mainPreviewImg"><img src="{{ item.image.url }}" alt="{{ product.title }}"
+                                                                   width="940"
+                                                                   height="940"/></a>
+                                </div>
+                            {% endfor %}
+
+                        </div>
+                    </div>
+                </div>
+
+                <div class="span7">
+                    <div class="product-title">
+                        {% if not request.user.is_authenticated %}
+                            <p class="alert alert-danger text-center">برای ثبت امتیاز | علاقه مندی | پسندیدن و ... ابتدا <a href="/login">وارد</a>
+                                شوید</p>
+                        {% endif %}
+                        {% include 'partials/stars.html' with product=product user=request.user %}
+                        <h1 class="name">{{ product.title }}</h1>
+                        <div class="meta">
+                            <span class="tag">{{ product.price | intcomma }} تومان</span>
+                            <span class="stock">
+                                {% if product.count != 0 %}
+                                    <span class="btn btn-success">موجود</span>
+                                {% else %}
+                                    <span class="btn btn-danger">اتمام موجودی</span>
+                                {% endif %}
+
+                                {% include 'partials/suggesting.html' with user=request.user product=product %}
+
+                            </span>
+                        </div>
+
+                        {% include 'partials/likes_and_dislikes.html' with user=request.user product=product %}
+                        {% include 'partials/wishlist.html' with user=request.user product=product %}
+
+                    </div>
+                    <div class="product-description">
+                        <p>{{ product.short_text }}</p>
+                        <hr/>
+
+                        <!--  ==========  -->
+                        <!--  = Add to cart form =  -->
+                        <!--  ==========  -->
+                        <div class="form form-inline clearfix">
+                            <div class="numbered">
+                                <input id="count" type="text" name="num" value="1" class="tiny-size"/>
+                                <span class="clickable add-one icon-plus-sign-alt"></span>
+                                <span class="clickable remove-one icon-minus-sign-alt"></span>
+                            </div>
+                            &nbsp;
+                            <select id="selected_color" name="color" class="span2">
+                                {% for item in colors_list %}
+                                    <option value="{{ item.id }}">{{ item.name }}</option>
+                                {% endfor %}
+                            </select>
+                            &nbsp;
+                            <select id="selected_size" name="size" class="span2">
+                                {% for item in sizes_list %}
+                                    <option value="{{ item.id }}">{{ item.title }}</option>
+                                {% endfor %}
+                            </select>
+                            <div id="cart_buttons">
+                                {% include 'partials/product_single_buttons.html' with product=product user_id=request.user %}
+                            </div>
+                        </div>
+
+                        <hr/>
+
+                        <!--  ==========  -->
+                        <!--  = Share buttons =  -->
+                        <!--  ==========  -->
+
+                        <div class="share-item">
+                            <div class="pull-right social-networks">
+                                <!-- AddThis Button BEGIN -->
+                                <div class="addthis_toolbox addthis_default_style ">
+                                    <a class="addthis_button_tweet"></a>
+                                    <a class="addthis_button_pinterest_pinit"></a>
+                                    <a class="addthis_counter addthis_pill_style"></a>
+                                </div>
+                                <script type="text/javascript"
+                                        src="//s7.addthis.com/js/300/addthis_widget.js#pubid=xa-517459541beb3977"></script>
+                                <!-- AddThis Button END -->
+                            </div>
+                            با دوستان خود به اشتراک بگذارید :
+                        </div>
+
+                    </div>
+                </div>
+            </div>
+
+            <!--  ==========  -->
+            <!--  = Tabs with more info =  -->
+            <!--  ==========  -->
+            <div class="row">
+                <div class="span12">
+                    <ul id="myTab" class="nav nav-tabs">
+                        <li class="active">
+                            <a href="#tab-1" data-toggle="tab">جزئیات</a>
+                        </li>
+                        <li>
+                            <a href="#tab-3" data-toggle="tab">نظرات</a>
+                        </li>
+                        <li>
+                            <a href="#tab-4" data-toggle="tab">جزئیات ارسال</a>
+                        </li>
+                    </ul>
+                    <div class="tab-content">
+                        <div class="fade in tab-pane active" id="tab-1">
+                            <h3>توضیحات محصول</h3>
+                            <p>
+                                {{ product.text }}
+                            </p>
+                        </div>
+                        <div class="fade tab-pane" id="tab-3">
+                            {% include 'partials/comment_answer_modal.html' %}
+                            {% include 'partials/comments.html' with object=product %}
+                        </div>
+                        <div class="fade tab-pane" id="tab-4">
+                            <p>{{ settings.transfer_detail }}</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div> <!-- /container -->
+
+    <!--  ==========  -->
+    <!--  = Related Products =  -->
+    <!--  ==========  -->
+    <div class="boxed-area no-bottom">
+        <div class="container">
+
+            <!--  ==========  -->
+            <!--  = Title =  -->
+            <!--  ==========  -->
+            <div class="row">
+                <div class="span12">
+                    <div class="main-titles lined">
+                        <h2 class="title"><span class="light">محصولات</span> مرتبط</h2>
+                    </div>
+                </div>
+            </div>
+
+            <!--  ==========  -->
+            <!--  = Related products =  -->
+            <!--  ==========  -->
+            <div class="row popup-products">
+
+                {% for item in related_products %}
+                    <div class="span3">
+                        <div class="product">
+                            <div class="product-img">
+                                <div class="picture">
+                                    <img src="{{ item.original_image.url }}" alt="{{ item.title }}" width="540"
+                                         height="374"/>
+                                    <div class="img-overlay">
+                                        <a href="{% url 'product' slug=item.slug %}" class="btn more btn-primary">توضیحات
+                                            بیشتر</a>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="main-titles no-margin">
+                                {#                                <span class="striked">{{ item.price }} تومان</span>#}
+                                <h4 class="title"> <span
+                                        class="red-clr">{{ item.price|intcomma }} تومان</span></h4>
+                                <a href="{% url 'product' slug=item.slug %}"><h5 class="no-margin">{{ item.title }}</h5>
+                                </a>
+                            </div>
+                            <p class="desc">{{ item.short_text }}</p>
+                            <p class="center-align stars">
+                                {% cal_stars item.stars as stars %}
+                                {% with ''|center:stars as stars_range %}
+                                    {% for item in stars_range %}
+                                        <span class="icon-star stars-clr"></span>
+                                    {% endfor %}
+                                {% endwith %}
+
+                                {% cal_unstars stars as unstars %}
+                                {% with ''|center:unstars as un_stars_range %}
+                                    {% for item in un_stars_range %}
+                                        <span class="icon-star"></span>
+                                    {% endfor %}
+                                {% endwith %}
+                            </p>
+                        </div>
+                    </div>
+                {% endfor %}
+
+            </div>
+        </div>
+    </div>
+{% endblock %}
+
+{% block JS %}
+    <script>
+        function AnswerComment(parent_id, parent_title) {
+            $('#parent_id').val(parent_id)
+            $('#myModalLabel').text('پاسخ به نظر ' + parent_title)
+        }
+    </script>
+
+    <script>
+        function getCookie(name) {
+            let cookieValue = null;
+            if (document.cookie && document.cookie !== '') {
+                const cookies = document.cookie.split(';');
+                for (let i = 0; i < cookies.length; i++) {
+                    const cookie = cookies[i].trim();
+                    // Does this cookie string begin with the name we want?
+                    if (cookie.substring(0, name.length + 1) === (name + '=')) {
+                        cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                        break;
+                    }
+                }
+            }
+            return cookieValue;
+        }
+
+        function Rate_Star(score) {
+            const data = {
+                'score': score,
+                'product_id': {{ product.id }}
+            }
+
+            const csrftoken = getCookie('csrftoken')
+
+            $.ajax({
+                headers: {'X-CSRFToken': csrftoken},
+                url: "{% url 'submit-star' %}",
+                method: "POST",
+                data: data,
+                async: true,
+                success: function (data) {
+                    $("#star_rating").html(data['stars'])
+                },
+            });
+        }
+
+        function Submit_Cart() {
+            var color = $("#selected_color option:selected").val()
+            var size = $("#selected_size option:selected").val()
+            var count = $("#count").val()
+
+            const data = {
+                'product': {{ product.id }},
+                'color': color,
+                'size': size,
+                'count': count,
+                'page': 'product_single'
+            }
+
+            const csrftoken = getCookie('csrftoken')
+
+            $.ajax({
+                headers: {'X-CSRFToken': csrftoken},
+                url: "{% url 'submit-cart' %}",
+                method: "POST",
+                data: data,
+                async: true,
+                success: function (data) {
+                    $("#carts_list").html(data['carts'])
+                    $("#cart_buttons").html(data['products'])
+
+                    $("#count").val(1)
+
+                    toastr.options = {
+                        "showDuration": "400",
+                        "positionClass": "toast-bottom-center",
+                        "progressBar": true,
+                    }
+                    toastr.success(data['message']);
+                },
+            });
+        }
+
+        function Submit_NotifyUser() {
+            const data = {
+                'product_id': {{ product.id }},
+            }
+
+            const csrftoken = getCookie('csrftoken')
+
+            $.ajax({
+                headers: {'X-CSRFToken': csrftoken},
+                url: "{% url 'submit-notify_user' %}",
+                method: "POST",
+                data: data,
+                async: true,
+                success: function (data) {
+                    $("#cart_buttons").html(data['products'])
+
+                    toastr.options = {
+                        "showDuration": "400",
+                        "positionClass": "toast-bottom-center",
+                        "progressBar": true,
+                    }
+                    toastr.success(data['message']);
+                },
+            });
+        }
+
+        function Submit_Like_And_DisLike(type = 'like') {
+            const data = {
+                'product_id': {{ product.id }},
+                'type': type
+            }
+
+            const csrftoken = getCookie('csrftoken')
+
+            $.ajax({
+                headers: {'X-CSRFToken': csrftoken},
+                url: "{% url 'submit-like_dislike' %}",
+                method: "POST",
+                data: data,
+                async: true,
+                success: function (data) {
+                    $("#likes_and_dislikes").html(data['likes_and_dislikes'])
+
+                    toastr.options = {
+                        "showDuration": "400",
+                        "positionClass": "toast-bottom-center",
+                        "progressBar": true,
+                    }
+                },
+            });
+        }
+
+        function Submit_WishList() {
+            const data = {
+                'product_id': {{ product.id }}
+            }
+
+            const csrftoken = getCookie('csrftoken')
+
+            $.ajax({
+                headers: {'X-CSRFToken': csrftoken},
+                url: "{% url 'submit-wishlist' %}",
+                method: "POST",
+                data: data,
+                async: true,
+                success: function (data) {
+                    $("#wishlisted").html(data['wishlist'])
+                },
+            });
+        }
+
+        function Submit_Suggest() {
+            const data = {
+                'product_id': {{ product.id }}
+            }
+
+            const csrftoken = getCookie('csrftoken')
+
+            $.ajax({
+                headers: {'X-CSRFToken': csrftoken},
+                url: "{% url 'submit-suggest' %}",
+                method: "POST",
+                data: data,
+                async: true,
+                success: function (data) {
+                    $("#suggesting").html(data['suggesting'])
+                },
+            });
+        }
+
+        $("#commentform").submit(function (e) {
+            e.preventDefault()
+
+            var title = $("#title").val()
+            var text = $("#text").val()
+
+            const data = {
+                'title': title,
+                'text': text,
+                'type': 'product',
+                'parent_id': null,
+                'object_id': {{ product.id }}
+            }
+
+            const csrftoken = getCookie('csrftoken')
+
+            $.ajax({
+                headers: {'X-CSRFToken': csrftoken},
+                url: "{% url 'submit-comment' %}",
+                method: "POST",
+                data: data,
+                async: true,
+                success: function (data) {
+                    $("#comments").html(data['comments'])
+                    $('#close_modal').click()
+
+                    $("#title").val('')
+                    $("#text").val('')
+
+                    toastr.options = {
+                        "showDuration": "400",
+                        "positionClass": "toast-bottom-center",
+                        "progressBar": true,
+                    }
+                    toastr.success(data['detail']);
+                },
+                error: function (error) {
+                    const errors = JSON.parse(error.responseText)
+
+                    toastr.options = {
+                        "showDuration": "400",
+                        "positionClass": "toast-bottom-center",
+                        "progressBar": true,
+                    }
+                    toastr.options.positionClass = 'toast-bottom-center'
+
+                    for (const item in errors) {
+                        toastr.error(item + ' : ' + errors[item][0])
+                        break
+                    }
+                }
+            });
+        })
+        $("#answer_commentform").submit(function (e) {
+            e.preventDefault()
+
+            var title = $("#answer_title").val()
+            var text = $("#answer_text").val()
+            var parent_id = $('#parent_id').val()
+
+            const data = {
+                'title': title,
+                'text': text,
+                'type': 'product',
+                'parent_id': parent_id ? parent_id : null,
+                'object_id': {{ product.id }}
+            }
+
+            const csrftoken = getCookie('csrftoken')
+
+            $.ajax({
+                headers: {'X-CSRFToken': csrftoken},
+                url: "{% url 'submit-comment' %}",
+                method: "POST",
+                data: data,
+                async: true,
+                success: function (data) {
+                    $("#comments").html(data['comments'])
+                    $('#close_modal').click()
+
+                    $("#answer_title").val('')
+                    $("#answer_text").val('')
+
+                    toastr.options = {
+                        "showDuration": "400",
+                        "positionClass": "toast-bottom-center",
+                        "progressBar": true,
+                    }
+                    toastr.success(data['detail']);
+                },
+                error: function (error) {
+                    const errors = JSON.parse(error.responseText)
+
+                    toastr.options = {
+                        "showDuration": "400",
+                        "positionClass": "toast-bottom-center",
+                        "progressBar": true,
+                    }
+                    toastr.options.positionClass = 'toast-bottom-center'
+
+                    for (const item in errors) {
+                        toastr.error(item + ' : ' + errors[item][0])
+                        break
+                    }
+                }
+            });
+        })
+
+    </script>
+{% endblock %}

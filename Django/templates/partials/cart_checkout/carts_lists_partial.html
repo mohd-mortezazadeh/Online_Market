@@ -1,0 +1,79 @@
+{% load main %}
+{% load  checkout %}
+{% load humanize %}
+
+<table id="carts_list" class="table table-items">
+    <thead>
+    <tr>
+        <th colspan="2">آیتم</th>
+        <th>
+            <div class="align-center">تعداد</div>
+        </th>
+        <th>
+            <div class="align-right">قیمت</div>
+        </th>
+    </tr>
+    </thead>
+    <tbody>
+
+    {% for item in user.carts.all %}
+        <tr>
+            <td class="image"><img src="{{ item.product.original_image.url }}"
+                                   alt="{{ item.product.title }}"
+                                   width="124" height="124"/></td>
+            {% if is_carts_list %}
+                <td class="desc"><a href="{% url 'product' slug=item.product.slug %}">{{ item.product.title }}</a>
+                    &nbsp; <a
+                            title="Remove Item"
+                            class="icon-remove-sign"
+                    ></a>
+                </td>
+            {% else %}
+                <td class="desc">
+                </td>
+            {% endif %}
+            <td class="qty">
+                {% if is_carts_list %}
+                    <input type="text" onchange="ChangeCount(this.value , {{ item.id }})" class="tiny-size count"
+                           value="{{ item.count }}"/>
+                {% else %}
+                    {{ item.count }}
+                {% endif %}
+            </td>
+            <td class="price">
+                {{ item.product.price | intcomma }} تومان
+            </td>
+        </tr>
+    {% endfor %}
+
+    <tr>
+        <td class="stronger">هزینه ارسال :</td>
+        <td class="stronger">
+            <div class="align-right">{{ settings.transport_cost | intcomma }} تومان</div>
+        </td>
+    </tr>
+    <tr>
+        <td class="stronger">جمع کل :</td>
+        <td class="stronger">
+            <div class="size-16 align-right">{{ user.id | cal_cart_sum:settings.transport_cost|intcomma }} تومان
+            </div>
+        </td>
+    </tr>
+    </tbody>
+</table>
+
+{% if not is_carts_list and user|can_use_coupon %}
+    <div id="coupon">
+        <label>کد تخفیف</label>
+        <input type="text" name="coupon_code" class="form-control">
+
+        {% if coupon_error %}
+            <div style="font-size: 15px !important;" class="alert alert-danger text-center">
+                {{ coupon_error }}
+            </div>
+        {% endif %}
+
+        <hr>
+    </div>
+
+{% endif %}

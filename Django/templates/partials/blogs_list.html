@@ -1,0 +1,64 @@
+{% load humanize %}
+{% load main %}
+
+<section id="blogs_list" class="span8 blog">
+
+    {% for item in blogs %}
+        <article class="post format-standard sticky">
+            <div class="post-inner">
+                <div class="post-title">
+                    <h2><a href="{% url 'blog' slug=item.slug %}"><span
+                            class="light">{{ item.title }}</span></a></h2>
+                    <div class="metadata">
+                        {{ item.created_at | naturaltime }}
+                        نویسنده : <a rel="category tag"
+                                     title="View all posts in aciform">{{ item.author.username }}</a>
+                    </div>
+                </div>
+
+                <p class="push-down-25">
+                    {{ item.body | safe }}
+                </p>
+
+                <a href="{% url 'blog' slug=item.slug %}" class="btn btn-primary bold higher">ادامه
+                    مطلب</a>
+            </div>
+        </article>
+    {% endfor %}
+
+    <hr/>
+
+     {% if blogs.has_other_pages %}
+        <div class="pagination">
+            <ul class="mouse">
+                {% if blogs.has_previous %}
+                    <li onclick="Paginate({{ blogs.previous_page_number }})"><a class="btn btn-primary"><span
+                            class="icon-chevron-left"></span></a></li>
+                {% else %}
+                    <li class="disabled"><a class="btn btn-primary"><span
+                            class="icon-chevron-left"></span></a></li>
+                {% endif %}
+                {% for i in blogs.paginator.page_range %}
+                    {% if blogs.number == i %}
+                        <li class="active"><a class="disabled">{{ i }}</a></li>
+                    {% else %}
+                        <li onclick="Paginate({{ i }})"><a>{{ i }}</a></li>
+                    {% endif %}
+                {% endfor %}
+                {% if blogs.has_next %}
+                    <li onclick="Paginate({{ blogs.next_page_number }})"><a class="btn btn-primary"><span
+                            class="icon-chevron-right"></span></a></li>
+                {% else %}
+                    <li class="disabled"><a class="btn btn-primary"><span class="icon-chevron-right"></span></a></li>
+                {% endif %}
+            </ul>
+        </div>
+    {% endif %}
+
+</section>
+
+<style rel="stylesheet">
+    .mouse li:hover {
+        cursor: pointer;
+    }
+</style>

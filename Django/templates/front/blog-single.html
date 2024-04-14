@@ -1,0 +1,346 @@
+{% extends 'front/layouts/app.html' %}
+{% load humanize %}
+{% load main %}
+
+{% block title %} مقاله {{ article.title }} {% endblock %}
+{% block content %}
+    <div class="darker-stripe">
+        <div class="container">
+            <div class="row">
+                <div class="span12">
+                    <ul class="breadcrumb">
+                        <li>
+                            <a href="/">فروشگاه</a>
+                        </li>
+                        <li><span class="icon-chevron-right"></span></li>
+                        <li>
+                            <a href="{% url 'blogs' %}">بلاگ</a>
+                        </li>
+                        <li><span class="icon-chevron-right"></span></li>
+                        <li>
+                            {{ blog.title }}
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="container">
+        <div class="push-up top-equal blocks-spacer">
+            <div class="row">
+
+                <!--  ==========  -->
+                <!--  = Main Title =  -->
+                <!--  ==========  -->
+
+                <div class="span12">
+                    <div class="title-area">
+                        <h1 class="inline"><span class="light">بلاگ</span> {{ blog.tiitle }} </h1>
+                        <h2 class="inline tagline">{{ blog.title }}</h2>
+                    </div>
+                </div>
+
+                <!--  ==========  -->
+                <!--  = Main content =  -->
+                <!--  ==========  -->
+                <section class="span8 single single-post">
+
+                    <!--  ==========  -->
+                    <!--  = Post =  -->
+                    <!--  ==========  -->
+                    <article class="post format-video">
+                        <div class="post-inner">
+                            <img src="{{ blog.image.url }}" alt="{{ blog.title }}">
+                            <div class="post-title">
+                                <h2><span class="light">{{ blog.title }}</span></h2>
+                                <div class="metadata">
+                                    {{ blog.created_at | naturaltime }}
+                                    نوشته شده توسط : <a title="View all posts in aciform"
+                                                        href="#">{{ blog.author.username }}</a>
+                                </div>
+                            </div>
+
+                            <p>{{ blog.body | safe }}</p>
+
+                        </div>
+                    </article>
+
+                    <hr/>
+
+                    <!--  ==========  -->
+                    <!--  = Comments =  -->
+                    <!--  ==========  -->
+
+                    <section id="comments" class="comments-container">
+                        {% get_blog_accepted_comments blog as comments %}
+                        <h3 class="push-down-25"><span class="light">{{ comments | length }}</span> نظر</h3>
+
+                        {% if request.user.is_authenticated and comments|length == 0 %}
+                            <p>شما اولین نفری باشید که نظر ثبت می کنید</p>
+                        {% endif %}
+
+                        {% for item in comments %}
+                            <div class="single-comment clearfix">
+                                <div class="avatar-container">
+                                    <img src="{{ item.user.image | show_commented_user_image }}"
+                                         alt="{{ item.user.username }}" class="avatar" width="184"
+                                         height="184"/>
+                                </div>
+                                <div class="comment-content">
+                                    <div class="comment-inner">
+                                        <cite class="author-name">
+                                            <span class="light">{{ item.user.username }}</span>
+                                        </cite>
+                                        <div class="metadata">
+                                            {{ item.created_at | naturaltime }}
+                                            {% if not item.answer and request.user.is_authenticated %}
+                                                <a onclick="AnswerComment('{{ item.id }}' , '{{ item.title }}')"
+                                                   id="answer_button"
+                                                   href="#myModal" role="button" data-toggle="modal">پاسخ</a>
+                                            {% endif %}
+                                        </div>
+                                        <cite class="author-name">
+                                            <hr>
+                                            <p>{{ item.title }}</p>
+                                        </cite>
+                                        <div class="comment-text">
+                                            <p>{{ item.text }}</p>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        {% endfor %}
+
+                        <hr/>
+
+                        <h3 class="push-down-25"><span class="light">نظر</span> بدهید</h3>
+
+                        {% if user.is_authenticated %}
+                            <form id="commentform" method="post" class="form form-inline form-comments">
+                                <p class="push-down-20">
+                                    <label for="author">عنوان<span class="red-clr bold">*</span></label>
+                                    <input type="text" class="input-block-level" aria-required="true" tabindex="1"
+                                           size="30"
+                                           id="title" name="title" required>
+                                </p>
+
+                                <p class="push-down-20">
+                                    <label for="author">متن<span class="red-clr bold">*</span></label>
+                                    <textarea class="input-block-level" tabindex="4" rows="7" cols="70" id="text"
+                                              name="text"
+                                              required></textarea>
+                                </p>
+                                <p>
+                                    <button class="btn btn-primary bold" type="submit" tabindex="5" id="submit">ارسال
+                                        نظر
+                                    </button>
+                                </p>
+                            </form>
+                        {% else %}
+                            <p class="alert alert-danger text-center">برای ثبت نظر ابتدا <a href="/login">وارد</a>
+                                شوید</p>
+
+                        {% endif %}
+
+                        {% include 'partials/comment_answer_modal.html' %}
+
+                    </section>
+
+                </section> <!-- /main content -->
+
+                <!--  ==========  -->
+                <!--  = Sidebar =  -->
+                <!--  ==========  -->
+                <aside class="span4 right-sidebar">
+
+                    <!--  ==========  -->
+                    <!--  = Search Widget =  -->
+                    <!--  ==========  -->
+                    <div class="sidebar-item widget_search">
+                        <!-- <div class="underlined">
+                            <h3><span class="light">Search</span></h3>
+                        </div> -->
+
+                        <form class="form" action="#" id="searchform" method="get" role="search">
+                            <input type="text" id="appendedInputButton" class="input-block-level" name="s"
+                                   placeholder="جستجو در نوشته ها ...">
+                            <button type="submit">
+                                <i class="icon-search"></i>
+                            </button>
+                        </form>
+                    </div>
+
+                    <!--  ==========  -->
+                    <!--  = Flickr Widget =  -->
+                    <!--  ==========  -->
+                    <div class="sidebar-item widget_flickr">
+                        <div class="flickr-badge clearfix">
+                            <!-- Start of Flickr Badge -->
+                            <div id="flickr_badge_uber_wrapper">
+                                <div id="flickr_badge_wrapper">
+                                    <script type="text/javascript"
+                                            src="http://www.flickr.com/badge_code_v2.gne?count=9&display=random&size=s&layout=x&source=all_tag&tag=surf&user=29003388%40N04"></script>
+                                </div>
+                            </div>
+                            <!-- End of Flickr Badge -->
+                        </div>
+                    </div>
+
+                    <!--  ==========  -->
+                    <!--  = Archive =  -->
+                    <!--  ==========  -->
+                    <div class="sidebar-item widget_archive">
+                        <div class="underlined">
+                            <h3><span class="light">مقاله های مرتبط</span></h3>
+                        </div>
+
+                        <ul>
+                            {% for item in related_blogs %}
+                                <li><a title="{{ item.title }}"
+                                       href="{% url 'blog' slug=item.slug %}">{{ item.title }}</a>
+                                </li>
+                            {% endfor %}
+                        </ul>
+                    </div>
+
+                </aside>
+
+            </div>
+        </div>
+    </div>
+{% endblock %}
+
+{% block JS %}
+    <script>
+        function AnswerComment(parent_id, parent_title) {
+            $('#parent_id').val(parent_id)
+            $('#myModalLabel').text('پاسخ به نظر ' + parent_title)
+        }
+    </script>
+    <script>
+        function getCookie(name) {
+            let cookieValue = null;
+            if (document.cookie && document.cookie !== '') {
+                const cookies = document.cookie.split(';');
+                for (let i = 0; i < cookies.length; i++) {
+                    const cookie = cookies[i].trim();
+                    if (cookie.substring(0, name.length + 1) === (name + '=')) {
+                        cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                        break;
+                    }
+                }
+            }
+            return cookieValue;
+        }
+
+        $("#commentform").submit(function (e) {
+            e.preventDefault()
+
+            var title = $("#title").val()
+            var text = $("#text").val()
+
+            const data = {
+                'title': title,
+                'text': text,
+                'type': 'product',
+                'parent_id': null,
+                'object_id': {{ product.id }}
+            }
+
+            const csrftoken = getCookie('csrftoken')
+
+            $.ajax({
+                headers: {'X-CSRFToken': csrftoken},
+                url: "{% url 'submit-comment' %}",
+                method: "POST",
+                data: data,
+                async: true,
+                success: function (data) {
+                    $("#comments").html(data['comments'])
+                    $('#close_modal').click()
+
+                    $("#title").val('')
+                    $("#text").val('')
+
+                    toastr.options = {
+                        "showDuration": "400",
+                        "positionClass": "toast-bottom-center",
+                        "progressBar": true,
+                    }
+                    toastr.success(data['detail']);
+                },
+                error: function (error) {
+                    const errors = JSON.parse(error.responseText)
+
+                    toastr.options = {
+                        "showDuration": "400",
+                        "positionClass": "toast-bottom-center",
+                        "progressBar": true,
+                    }
+                    toastr.options.positionClass = 'toast-bottom-center'
+
+                    for (const item in errors) {
+                        toastr.error(item + ' : ' + errors[item][0])
+                        break
+                    }
+                }
+            });
+        })
+        $("#answer_commentform").submit(function (e) {
+            e.preventDefault()
+
+            var title = $("#answer_title").val()
+            var text = $("#answer_text").val()
+            var parent_id = $('#parent_id').val()
+
+            const data = {
+                'title': title,
+                'text': text,
+                'type': 'product',
+                'parent_id': parent_id ? parent_id : null,
+                'object_id': {{ product.id }}
+            }
+
+            const csrftoken = getCookie('csrftoken')
+
+            $.ajax({
+                headers: {'X-CSRFToken': csrftoken},
+                url: "{% url 'submit-comment' %}",
+                method: "POST",
+                data: data,
+                async: true,
+                success: function (data) {
+                    $("#comments").html(data['comments'])
+                    $('#close_modal').click()
+
+                    $("#answer_title").val('')
+                    $("#answer_text").val('')
+
+                    toastr.options = {
+                        "showDuration": "400",
+                        "positionClass": "toast-bottom-center",
+                        "progressBar": true,
+                    }
+                    toastr.success(data['detail']);
+                },
+                error: function (error) {
+                    const errors = JSON.parse(error.responseText)
+
+                    toastr.options = {
+                        "showDuration": "400",
+                        "positionClass": "toast-bottom-center",
+                        "progressBar": true,
+                    }
+                    toastr.options.positionClass = 'toast-bottom-center'
+
+                    for (const item in errors) {
+                        toastr.error(item + ' : ' + errors[item][0])
+                        break
+                    }
+                }
+            });
+        })
+
+    </script>
+{% endblock %}

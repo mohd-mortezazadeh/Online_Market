@@ -1,0 +1,368 @@
+{% extends 'front/layouts/app.html' %}
+{% load static %}
+{% load humanize %}
+{% load main %}
+
+{% block title %} فروشگاه جنگو {% endblock %}
+
+{% block content %}
+    <div class="fullwidthbanner-container">
+        <div class="fullwidthbanner">
+            <ul>
+
+                {% for item in sliders %}
+                    <li data-transition="premium-random" data-slotamount="3">
+                        <img src="{{ item.image.url }}" alt="{{ item.title }}"
+                             width="1400"
+                             height="377"/>
+
+
+                        <!-- texts -->
+                        <div class="caption lfl big_theme"
+                             data-x="120"
+                             data-y="120"
+                             data-speed="1000"
+                             data-start="500"
+                             data-easing="easeInOutBack">
+                            {{ item.title }}
+                        </div>
+
+                        <a href="{{ item.url }}" class="caption lfl btn btn-primary btn_theme"
+                           data-x="120"
+                           data-y="260"
+                           data-speed="1000"
+                           data-start="900"
+                           data-easing="easeInOutBack">
+                            مشاهده {{ item.title }}
+                        </a>
+                    </li>
+                {% endfor %}
+
+            </ul>
+            <div class="tp-bannertimer"></div>
+        </div>
+        <!--  ==========  -->
+        <!--  = Nav Arrows =  -->
+        <!--  ==========  -->
+        <div id="sliderRevLeft"><i class="icon-chevron-left"></i></div>
+        <div id="sliderRevRight"><i class="icon-chevron-right"></i></div>
+    </div> <!-- /slider revolution -->
+
+    <!--  ==========  -->
+    <!--  = Main container =  -->
+    <!--  ==========  -->
+    <div class="container">
+        <div class="row featured-items blocks-spacer">
+            <div class="span12">
+
+                <!--  ==========  -->
+                <!--  = Title =  -->
+                <!--  ==========  -->
+                <div class="main-titles lined">
+                    <h2 class="title"><span class="light">محصولات</span> ویژه</h2>
+                    <div class="arrows">
+                        <a href="#" class="icon-chevron-right" id="featuredItemsRight"></a>
+                        <a href="#" class="icon-chevron-left" id="featuredItemsLeft"></a>
+                    </div>
+                </div>
+            </div>
+
+            <div class="span12">
+                <!--  ==========  -->
+                <!--  = Carousel =  -->
+                <!--  ==========  -->
+                <div class="carouFredSel" data-autoplay="false" data-nav="featuredItems">
+                    <div class="slide">
+                        <div class="row" id="products_list">
+
+                            {% for item in special_products %}
+
+                                <div class="span4">
+                                    <div class="product">
+                                        <div class="product-img featured">
+                                            <div class="picture">
+                                                <img src="{{ item.original_image.url }}"
+                                                     alt="" width="500"/>
+                                                <div class="img-overlay">
+                                                    <a href="{% url 'product' slug=item.slug %}"
+                                                       class="btn more btn-primary">توضیحات
+                                                        بیشتر</a>
+                                                    {% if request.user.is_authenticated %}
+                                                        {% if item.count != 0 %}
+                                                            <a class="btn buy btn-danger"
+                                                               onclick="Submit_Cart({{ item.id }})">اضافه به سبد
+                                                                خرید</a>
+                                                        {% else %}
+                                                            <span class="btn buy btn-warning">ناموجود</span>
+                                                        {% endif %}
+                                                    {% endif %}
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="main-titles">
+                                            <h4 class="title">{{ item.price | intcomma }} تومان</h4>
+                                            <a href="{% url 'product' slug=item.slug %}"><h5
+                                                    class="no-margin">{{ item.title }}</h5></a>
+                                        </div>
+                                        <p class="desc">{{ item.short_text }}</p>
+
+                                        <p class="center-align stars">
+
+                                            {% cal_stars item.stars as stars %}
+                                            {% with ''|center:stars as stars_range %}
+                                                {% for item in stars_range %}
+                                                    <span class="icon-star stars-clr"></span>
+                                                {% endfor %}
+                                            {% endwith %}
+
+                                            {% cal_unstars stars as unstars %}
+                                            {% with ''|center:unstars as un_stars_range %}
+                                                {% for item in un_stars_range %}
+                                                    <span class="icon-star"></span>
+                                                {% endfor %}
+                                            {% endwith %}
+
+                                        </p>
+                                    </div>
+                                </div>
+
+                            {% endfor %}
+
+                        </div>
+                    </div>
+                </div> <!-- /carousel -->
+            </div>
+
+        </div>
+    </div> <!-- /container -->
+
+    <!--  ==========  -->
+    <!--  = New Products =  -->
+    <!--  ==========  -->
+    <div class="boxed-area blocks-spacer">
+        <div class="container">
+
+            <!--  ==========  -->
+            <!--  = Title =  -->
+            <!--  ==========  -->
+            <div class="row">
+                <div class="span12">
+                    <div class="main-titles lined">
+                        <h2 class="title"><span class="light">محصولات</span> جدید فروشگاه</h2>
+                    </div>
+                </div>
+            </div> <!-- /title -->
+
+            <div class="row popup-products blocks-spacer">
+
+                {% for item in new_products %}
+                    <div class="span3">
+                        <div class="product">
+                            <div class="product-img">
+                                <div class="picture">
+                                    <img src="{{ item.original_image.url }}" alt="{{ item.title }}"
+                                         width="540"
+                                         height="374"/>
+                                    <div class="img-overlay">
+                                        <a href="{% url 'product' slug=item.slug %}" class="btn more btn-primary">توضیحات
+                                            بیشتر</a>
+                                        {% if request.user.is_authenticated %}
+                                            {% if item.count != 0 %}
+                                                <a class="btn buy btn-danger"
+                                                   onclick="Submit_Cart({{ item.id }})">اضافه به سبد خرید</a>
+                                            {% else %}
+                                                 <span class="btn buy btn-warning">ناموجود</span>
+                                            {% endif %}
+                                        {% endif %}
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="main-titles no-margin">
+                                <h4 class="title">{{ item.price | intcomma }} تومان</h4>
+                                <a href="{% url 'product' slug=item.slug %}"><h5
+                                        class="no-margin">{{ item.title }}</h5></a>
+                            </div>
+                            <p class="desc">{{ item.short_text }}</p>
+                            <p class="center-align stars">
+
+                                {% cal_stars item.stars as stars %}
+                                {% with ''|center:stars as stars_range %}
+                                    {% for item in stars_range %}
+                                        <span class="icon-star stars-clr"></span>
+                                    {% endfor %}
+                                {% endwith %}
+
+                                {% cal_unstars stars as unstars %}
+                                {% with ''|center:unstars as un_stars_range %}
+                                    {% for item in un_stars_range %}
+                                        <span class="icon-star"></span>
+                                    {% endfor %}
+                                {% endwith %}
+
+                            </p>
+                        </div>
+                    </div>
+                    {% if forloop.counter|get_loop_mul == 0 %}
+                        <div class="clearfix"></div>
+                    {% endif %}
+                {% endfor %}
+
+            </div>
+        </div>
+    </div> <!-- /new products -->
+
+    <!--  ==========  -->
+    <!--  = Most Popular products =  -->
+    <!--  ==========  -->
+    <div class="most-popular blocks-spacer">
+        <div class="container">
+
+            <!--  ==========  -->
+            <!--  = Title =  -->
+            <!--  ==========  -->
+            <div class="row">
+                <div class="span12">
+                    <div class="main-titles lined">
+                        <h2 class="title"><span class="light">محبوب ترین</span>محصولات فروشگاه</h2>
+                    </div>
+                </div>
+            </div> <!-- /title -->
+
+            <div class="row popup-products">
+
+                {% for item in most_liked_products %}
+                    <div class="span3">
+                        <div class="product">
+                            <div class="product-img">
+                                <div class="picture">
+                                    <img src="{{ item.original_image.url }}"
+                                         alt=""
+                                         width="540"
+                                         height="412"/>
+                                    <div class="img-overlay">
+                                        <a href="{% url 'product' slug=item.slug %}" class="btn more btn-primary">توضیحات
+                                            بیشتر</a>
+                                        {% if request.user.is_authenticated %}
+                                            {% if item.count != 0 %}
+                                                <a class="btn buy btn-danger"
+                                                   onclick="Submit_Cart({{ item.id }})">اضافه به سبد خرید</a>
+                                            {% else %}
+                                                 <span class="btn buy btn-warning">ناموجود</span>
+                                            {% endif %}
+                                        {% endif %}
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="main-titles no-margin">
+                                <h4 class="title">{{ item.price | intcomma }} تومان</h4>
+                                <a href="{% url 'product' slug=item.slug %}"><h5
+                                        class="no-margin">{{ item.title }}</h5></a>
+                            </div>
+                            <p class="desc">{{ item.short_text }}</p>
+                            <p class="center-align stars">
+
+                                {% cal_stars item.stars as stars %}
+                                {% with ''|center:stars as stars_range %}
+                                    {% for item in stars_range %}
+                                        <span class="icon-star stars-clr"></span>
+                                    {% endfor %}
+                                {% endwith %}
+
+                                {% cal_unstars stars as unstars %}
+                                {% with ''|center:unstars as un_stars_range %}
+                                    {% for item in un_stars_range %}
+                                        <span class="icon-star"></span>
+                                    {% endfor %}
+                                {% endwith %}
+
+                            </p>
+                        </div>
+                    </div>
+                {% endfor %}
+
+            </div>
+        </div>
+    </div> <!-- /most popular -->
+
+    <!--  ==========  -->
+    <!--  = Lastest News =  -->
+    <!--  ==========  -->
+    <div class="darker-stripe blocks-spacer more-space latest-news with-shadows">
+        <div class="container">
+
+            <!--  ==========  -->
+            <!--  = Title =  -->
+            <!--  ==========  -->
+            <div class="row">
+                <div class="span12">
+                    <div class="main-titles center-align">
+                        <h2 class="title">
+                            <span class="clickable icon-chevron-right" id="tweetsRight"></span> &nbsp;&nbsp;&nbsp;
+                            <span class="light">آخرین</span> خبر ها &nbsp;&nbsp;&nbsp;
+                            <span class="clickable icon-chevron-left" id="tweetsLeft"></span>
+                        </h2>
+                    </div>
+                </div>
+            </div> <!-- /title -->
+
+            <!--  ==========  -->
+            <!--  = News content =  -->
+            <!--  ==========  -->
+            <div class="row">
+                <div class="span12">
+                    <div class="carouFredSel" data-nav="tweets" data-autoplay="false"
+                         style="font-size: 50px !important;">
+
+                        {% for item in last_articles %}
+                            <div class="slide">
+                                <div class="row">
+
+                                    <div class="span12">
+                                        <div class="news-item">
+                                            <div class="published">{{ item.created_at | naturaltime }}</div>
+                                            <h6><a href="{% url 'blog' slug=item.slug %}">{{ item.title }}</a></h6>
+                                            <p>{{ item.description }}</p>
+                                        </div>
+                                    </div>
+
+                                </div>
+                            </div>
+                        {% endfor %}
+
+                    </div>
+                </div>
+            </div> <!-- /news content -->
+        </div>
+    </div> <!-- /latest news -->
+
+{% endblock %}
+
+{% block JS %}
+    <script>
+        function Submit_Cart(product_id) {
+            const data = {
+                'product': product_id,
+            }
+
+            const csrftoken = getCookie('csrftoken')
+
+            $.ajax({
+                headers: {'X-CSRFToken': csrftoken},
+                url: "{% url 'submit-cart' %}",
+                method: "POST",
+                data: data,
+                async: true,
+                success: function (data) {
+                    $("#carts_list").html(data['carts'])
+
+                    toastr.options = {
+                        "showDuration": "400",
+                        "positionClass": "toast-bottom-center",
+                        "progressBar": true,
+                    }
+                    toastr.success(data['message']);
+                },
+            });
+        }
+    </script>
+{% endblock %}

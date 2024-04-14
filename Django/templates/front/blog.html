@@ -1,0 +1,113 @@
+{% extends 'front/layouts/app.html' %}
+{% load humanize %}
+{% load main %}
+
+{% block title %} لیست مقالات {% endblock %}
+{% block content %}
+    <div class="darker-stripe">
+        <div class="container">
+            <div class="row">
+                <div class="span12">
+                    <ul class="breadcrumb">
+                        <li>
+                            <a href="/">فروشگاه</a>
+                        </li>
+                        <li><span class="icon-chevron-right"></span></li>
+                        <li>
+                            بلاگ
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="container">
+        <div class="push-up top-equal blocks-spacer">
+            <div class="row">
+
+                <!--  ==========  -->
+                <!--  = Main Title =  -->
+                <!--  ==========  -->
+
+                <div class="span12">
+                    <div class="title-area">
+                        <h1 class="inline"><span class="light">لیست بلاگ ها</span></h1>
+                    </div>
+                </div>
+
+                 {% include 'partials/blogs_list.html' with blogs=blogs %}
+
+                <aside class="span4 right-sidebar">
+
+                    <!--  ==========  -->
+                    <!--  = Search Widget =  -->
+                    <!--  ==========  -->
+                    <div class="sidebar-item widget_search">
+                        <!-- <div class="underlined">
+                            <h3><span class="light">Search</span></h3>
+                        </div> -->
+
+                        <form class="form" action="#" id="searchform" method="get" role="search">
+                            <input type="text" id="appendedInputButton" class="input-block-level" name="s"
+                                   placeholder="جستجو در نوشته ها ...">
+                            <button type="submit">
+                                <i class="icon-search"></i>
+                            </button>
+                        </form>
+                    </div>
+
+                    <!--  ==========  -->
+                    <!--  = Flickr Widget =  -->
+                    <!--  ==========  -->
+                    <div class="sidebar-item widget_flickr">
+                        <div class="flickr-badge clearfix">
+                            <!-- Start of Flickr Badge -->
+                            <div id="flickr_badge_uber_wrapper">
+                                <div id="flickr_badge_wrapper">
+                                    <script type="text/javascript"
+                                            src="http://www.flickr.com/badge_code_v2.gne?count=9&display=random&size=s&layout=x&source=all_tag&tag=surf&user=29003388%40N04"></script>
+                                </div>
+                            </div>
+                            <!-- End of Flickr Badge -->
+                        </div>
+                    </div>
+
+                    <!--  ==========  -->
+                    <!--  = Archive =  -->
+                    <!--  ==========  -->
+                    <div class="sidebar-item widget_archive">
+                        <div class="underlined">
+                            <h3><span class="light">آرشیو</span>نوشته های بلاگ</h3>
+                        </div>
+
+                        <ul>
+                            {% for item in archive_blogs %}
+                                <li><a title="{{ item.title }}"
+                                       href="{% url 'blog' slug=item.slug %}">{{ item.title }}</a>
+                                </li>
+                            {% endfor %}
+                        </ul>
+                    </div>
+                </aside>
+
+            </div>
+        </div>
+    </div>
+{% endblock %}
+
+{% block JS %}
+    <script>
+        function Paginate(page=1) {
+            $.ajax({
+                url: page === 1 ? "{% url 'blogs' %}" : "{% url 'blogs' %}?page=" + page,
+                method: "GET",
+                async: true,
+                success: function (data) {
+                    $("#blogs_list").html(data['blogs'])
+                },
+            });
+        }
+
+    </script>
+{% endblock %}

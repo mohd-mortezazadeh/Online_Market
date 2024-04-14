@@ -1,0 +1,99 @@
+<aside class="span3 left-sidebar" id="tourStep1">
+    <div class="sidebar-item sidebar-filters" id="sidebarFilters">
+
+        <!--  ==========  -->
+        <!--  = Sidebar Title =  -->
+        <!--  ==========  -->
+        <div class="underlined">
+            <h3><span class="light">بر اساس فیلتر</span> خرید کنید</h3>
+        </div>
+
+        <!--  ==========  -->
+        <!--  = Categories =  -->
+        <!--  ==========  -->
+        <div class="accordion-group" id="tourStep2">
+            <div class="accordion-heading">
+                <a class="accordion-toggle" data-toggle="collapse" href="#filterOne">دسته بندی ها <b
+                        class="caret"></b></a>
+            </div>
+            <div id="filterOne" class="accordion-body collapse in">
+                <div class="accordion-inner">
+                    {% for item in filter_bar.categories %}
+                        <input type="checkbox" class="filter-checkbox" data-filter="category" value="{{ item.id }}">
+                        &nbsp;  {{ item.name }}
+                        <br>
+                    {% endfor %}
+
+                </div>
+            </div>
+        </div> <!-- /categories -->
+
+        <!--  ==========  -->
+        <!--  = Prices slider =  -->
+        <!--  ==========  -->
+        <div class="accordion-group">
+            <div class="accordion-heading">
+                <a class="accordion-toggle" data-toggle="collapse" href="#filterPrices">قیمت <b
+                        class="caret"></b></a>
+            </div>
+            <div id="filterPrices" class="accordion-body in collapse">
+                <div class="accordion-inner with-slider">
+                    <p>به تومان :</p>
+                    <input type="text" id="min_price" placeholder="از" class="min-val"/>
+                    &nbsp;
+                    <input type="text" id="max_price" placeholder="تا" class="max-val"/>
+                </div>
+                <button id="priceFilterBtn" class="btn btn-primary">اعمال</button>
+            </div>
+        </div> <!-- /prices slider -->
+
+        <!--  ==========  -->
+        <!--  = Size filter =  -->
+        <!--  ==========  -->
+        <div class="accordion-group" id="tourStep3">
+            <div class="accordion-heading">
+                <a class="accordion-toggle collapsed" data-toggle="collapse" href="#filterTwo">سایز <b
+                        class="caret"></b></a>
+            </div>
+            <div id="filterTwo" class="accordion-body collapse">
+                <div class="accordion-inner">
+
+                    {% for item in filter_bar.sizes %}
+                        <input type="checkbox" class="filter-checkbox" data-filter="size" value="{{ item.id }}">&nbsp;
+                        {{ item.title }}
+                        <br>
+                    {% endfor %}
+
+                </div>
+            </div>
+        </div> <!-- /size filter -->
+
+        <!--  ==========  -->
+        <!--  = Color filter =  -->
+        <!--  ==========  -->
+        <div class="accordion-group">
+            <div class="accordion-heading">
+                <a class="accordion-toggle collapsed" data-filter="color" data-toggle="collapse" href="#filterThree">رنگ
+                    <b
+                            class="caret"></b></a>
+            </div>
+            <div id="filterThree" class="accordion-body collapse">
+                <div class="accordion-inner">
+
+                    {% for item in filter_bar.colors %}
+                        <input type="checkbox" class="filter-checkbox" data-filter="color" value="{{ item.id }}">&nbsp;
+                        {{ item.name }}
+                        <br>
+                        {#                        <a id="colors" data-internalid="{{ item.id }}" data-filter="color" data-type="color" data-inline-type="{{ item.id }}" class="selectable filter-checkbox detailed"><i#}
+                        {#                                class="box"></i> {{ item.name }} </a>#}
+                    {% endfor %}
+
+                </div>
+            </div>
+        </div> <!-- /color filter -->
+
+        <a href="#" class="remove-filter" id="removeFilters"><span class="icon-ban-circle"></span> حذف
+            همه فیلتر ها</a>
+
+    </div>
+</aside>

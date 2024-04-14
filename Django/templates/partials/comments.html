@@ -1,0 +1,110 @@
+{% load humanize %}
+{% load main %}
+
+<section id="comments" class="comments-container">
+    {% get_product_accepted_comments object as comments %}
+    <h3 class="push-down-25"><span class="light">{{ comments | length }}</span> نظر</h3>
+
+    {% if request.user.is_authenticated and comments|length == 0 %}
+        <p>شما اولین نفری باشید که نظر ثبت می کنید</p>
+    {% endif %}
+
+    {% for item in comments %}
+        <div class="single-comment clearfix">
+            <div class="avatar-container">
+                <img src="{{ item.user.image | show_commented_user_image }}" alt="{{ item.user.username }}"
+                     class="avatar"
+                     style="width: 80px !important; height: 80px !important;">
+            </div>
+            <div class="comment-content">
+                <div class="comment-inner">
+                    <cite class="author-name">
+                        <span class="light">{{ item.user.username }}</span>
+                        {% if not item.answer and request.user.is_authenticated %}
+                            <a onclick="AnswerComment('{{ item.id }}' , '{{ item.title }}')" id="answer_button"
+                               href="#myModal" role="button" data-toggle="modal">پاسخ</a>
+                        {% endif %}
+                    </cite>
+                    <div class="metadata pull-left">
+                        {{ item.created_at | naturaltime }}
+                    </div>
+                    <cite class="author-name">
+                        <hr>
+                        <p>{{ item.title }}</p>
+                    </cite>
+                    <div class="comment-text">
+                        <p>{{ item.text }}</p>
+                    </div>
+                </div>
+
+
+                {% if item.answer and item.answer.status == True %}
+                    <div class="single-comment nested clearfix">
+                        <div class="avatar-container">
+                            <img src="{{ item.answer.user.image | show_commented_user_image }}"
+                                 alt="{{ item.user.username }}"
+                                 class="avatar"
+                                 style="width: 80px !important; height: 80px !important;">
+                        </div>
+                        <div class="comment-content">
+                            <div class="comment-inner">
+                                <cite class="author-name">
+                                    <span class="light">{{ item.answer.user.username }}</span>
+                                </cite>
+                                <div class="metadata pull-left">
+                                    {{ item.answer.created_at | naturaltime }}
+                                </div>
+                                <cite class="author-name">
+                                    <hr>
+                                    <p>{{ item.answer.title }}</p>
+                                </cite>
+                                <div class="comment-text">
+                                    <p>{{ item.answer.text }}</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                {% endif %}
+
+
+            </div>
+        </div>
+    {% endfor %}
+
+    <hr>
+
+    <h3 class="push-down-25"><span class="light">نظر</span> بدهید</h3>
+
+    {% if user.is_authenticated %}
+        <form id="commentform" method="post" class="form form-inline form-comments">
+            <p class="push-down-20">
+                <label for="author">عنوان<span class="red-clr bold">*</span></label>
+                <input type="text" class="input-block-level" aria-required="true" tabindex="1" size="30"
+                       id="title" name="title" required>
+            </p>
+
+            <p class="push-down-20">
+                <label for="author">متن<span class="red-clr bold">*</span></label>
+                <textarea class="input-block-level" tabindex="4" rows="7" cols="70" id="text"
+                          name="text"
+                          required></textarea>
+            </p>
+            <p>
+                <button class="btn btn-primary bold" type="submit" tabindex="5" id="submit">
+                    ارسال نظر
+                </button>
+            </p>
+        </form>
+    {% else %}
+        <p class="alert alert-danger text-center">برای ثبت نظر ابتدا <a href="/login">وارد</a>
+            شوید</p>
+
+    {% endif %}
+
+</section>
+
+<style>
+    #answer_button:hover {
+        cursor: pointer;
+    }
+</style>

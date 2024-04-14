@@ -1,0 +1,15 @@
+{% load main %}
+
+{% if user.is_authenticated %}
+    <div id="likes_and_dislikes" class="pull-left" style="font-size: 20px !important;">
+    {% get_user_like_dislike_type user product as user_like_dislike_status %}
+    <span onclick="Submit_Like_And_DisLike('like')" class="icon-thumbs-up" {% if user_like_dislike_status == 'like' %}
+          style="color: red" {% endif %}></span>
+    <span>{{ product|get_likes_count }}</span>
+    &nbsp;
+    <span onclick="Submit_Like_And_DisLike('dislike')" class="icon-thumbs-down" {% if user_like_dislike_status == 'dislike' %}
+          style="color: red" {% endif %}></span>
+    <span>{{ product|get_dislikes_count }}</span>
+    <br>
+</div>
+{% endif %}

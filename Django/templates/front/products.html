@@ -1,0 +1,140 @@
+﻿{% extends 'front/layouts/app.html' %}
+
+{% block title %} لیست محصولات {% endblock %}
+
+{% block content %}
+    <div class="darker-stripe">
+        <div class="container">
+            <div class="row">
+                <div class="span12">
+                    <ul class="breadcrumb">
+                        <li>
+                            <a href="/">فروشگاه</a>
+                        </li>
+                        <li><span class="icon-chevron-right"></span></li>
+                        <li>
+                            محصولات
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="container">
+        <div class="push-up blocks-spacer">
+            <div class="row">
+
+                {% include 'partials/sidebar_filter.html' with filter_bar=filter_bar %}
+
+                <!--  ==========  -->
+                <!--  = Main content =  -->
+                <!--  ==========  -->
+
+                {% include 'partials/products_list.html' with products=products %}
+
+            </div>
+        </div>
+    </div>
+{% endblock %}
+
+{% block JS %}
+    <script>
+        let filters = null
+
+        function Filter() {
+            var _filterObj = {};
+            var _minPrice = $('#min_price').val();
+            var _maxPrice = $('#max_price').val();
+
+            _filterObj.sorting = $("#sorting").val();
+
+            if (!isNaN(parseInt(_minPrice)) && !isNaN(parseInt(_maxPrice))) {
+                _filterObj.minPrice = _minPrice;
+                _filterObj.maxPrice = _maxPrice;
+            }
+
+            $(".filter-checkbox").each(function (index, ele) {
+                var _filterVal = $(this).val();
+                var _filterKey = $(this).data('filter');
+                _filterObj[_filterKey] = Array.from(document.querySelectorAll('input[data-filter=' + _filterKey + ']:checked')).map(function (el) {
+                    return el.value;
+                });
+            });
+
+            filters = _filterObj
+
+            // Run Ajax
+            $.ajax({
+                url: '{% url 'products' %}',
+                data: _filterObj,
+                dataType: 'json',
+                success: function (data) {
+                    $("#products_list").html(data['products'])
+                }
+            });
+        }
+
+        $(".filter-checkbox,#priceFilterBtn").on('click', function () {
+            Filter()
+        });
+
+        // End
+
+        function getCookie(name) {
+            let cookieValue = null;
+            if (document.cookie && document.cookie !== '') {
+                const cookies = document.cookie.split(';');
+                for (let i = 0; i < cookies.length; i++) {
+                    const cookie = cookies[i].trim();
+                    // Does this cookie string begin with the name we want?
+                    if (cookie.substring(0, name.length + 1) === (name + '=')) {
+                        cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                        break;
+                    }
+                }
+            }
+            return cookieValue;
+        }
+
+        function Submit_Cart(product_id) {
+            const data = {
+                'product': product_id,
+            }
+
+            const csrftoken = getCookie('csrftoken')
+
+            $.ajax({
+                headers: {'X-CSRFToken': csrftoken},
+                url: "{% url 'submit-cart' %}",
+                method: "POST",
+                data: data,
+                async: true,
+                success: function (data) {
+                    $("#carts_list").html(data['carts'])
+                    $("#product_buttons").html(data['product_buttons_html'])
+
+                    toastr.options = {
+                        "showDuration": "400",
+                        "positionClass": "toast-bottom-center",
+                        "progressBar": true,
+                    }
+                    toastr.success(data['message']);
+                },
+            });
+        }
+
+        function Paginate(page = 1) {
+            $.ajax({
+                url: page === 1 ? "{% url 'products' %}" : "{% url 'products' %}?page=" + page,
+                method: "GET",
+                data: filters,
+                async: true,
+                success: function (data) {
+                    $("#products_list").html(data['products'])
+                },
+            });
+        }
+
+    </script>
+{% endblock %}

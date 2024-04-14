@@ -1,0 +1,32 @@
+{% load main %}
+
+{% if user.is_authenticated %}
+    {% if product.count != 0 %}
+        {% if product|is_product_added_to_cart:user.id %}
+            <button onclick="Submit_Cart()" class="btn btn-danger pull-right"><i
+                    class="icon-shopping-cart"></i>حذف از سبد خرید
+            </button>
+        {% else %}
+            <button onclick="Submit_Cart()" class="btn btn-danger pull-right"><i
+                    class="icon-shopping-cart"></i> افزودن به
+                سبد
+                خرید
+            </button>
+        {% endif %}
+    {% else %}
+        {% if  product|is_product_added_to_notify_user:user.id %}
+            <button onclick="Submit_NotifyUser()" class="btn btn-danger pull-right"><i class="icon-phone"></i>
+                دیگه لازم نیست به من اطلاع بدی
+            </button>
+        {% else %}
+            <button onclick="Submit_NotifyUser()" class="btn btn-primary pull-right"><i class="icon-phone"></i>
+                موجود شد به من اطلاع بده
+            </button>
+        {% endif %}
+    {% endif %}
+{% else %}
+    <a href="/login" class="btn btn-warning pull-right">
+        <i class="icon-user"></i>
+        ابتدا وارد شوید
+    </a>
+{% endif %}

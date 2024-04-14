@@ -1,0 +1,12 @@
+{% load main %}
+
+{% if user.is_authenticated %}
+    <div id="wishlisted" style="font-size: 20px !important; margin-top: 15px">
+    {% if user and  user|is_user_add_to_wishlist:product %}
+        <span onclick="Submit_WishList()" class="icon-bookmark"></span>
+
+    {% else %}
+        <span onclick="Submit_WishList()" class="icon-bookmark-empty"></span>
+    {% endif %}
+</div>
+{% endif %}

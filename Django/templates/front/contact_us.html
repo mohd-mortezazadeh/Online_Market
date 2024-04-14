@@ -1,0 +1,163 @@
+{% extends 'front/layouts/app.html' %}
+
+{% block title %} تماس با ما {% endblock %}
+
+{% block content %}
+    <!--  ==========  -->
+    <!--  = Breadcrumbs =  -->
+    <!--  ==========  -->
+    <div class="darker-stripe">
+        <div class="container">
+            <div class="row">
+                <div class="span12">
+                    <ul class="breadcrumb">
+                        <li>
+                            <a href="/">فروشگاه</a>
+                        </li>
+                        <li><span class="icon-chevron-right"></span></li>
+                        <li>
+                            <a href="{% url 'contact_us' %}">تماس با ما</a>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="container">
+        <div class="push-up top-equal blocks-spacer-last">
+            <div class="row">
+
+                <!--  ==========  -->
+                <!--  = Main Title =  -->
+                <!--  ==========  -->
+
+                <div class="span12">
+                    <div class="title-area">
+                        <h1 class="inline"><span class="light">با ما</span> ارتباط برقرار کنید.</h1>
+                    </div>
+                </div>
+
+                <!--  ==========  -->
+                <!--  = Main content =  -->
+                <!--  ==========  -->
+                <section class="span8 single single-page">
+
+                    <!--  ==========  -->
+                    <!--  = Post =  -->
+                    <!--  ==========  -->
+                    <article class="post">
+                        <div class="post-inner">
+                            <p>
+                               {{ contact_us_description }}
+                            </p>
+                        </div>
+                    </article>
+
+                    <hr/>
+
+                    <!--  ==========  -->
+                    <!--  = Contact Form =  -->
+                    <!--  ==========  -->
+                    <section class="contact-form-container span12">
+
+                        <h3 class="push-down-25"><span class="light">ارسال</span> پیام</h3>
+
+                        <form id="contact_us_form" method="post" class="form form-inline form-contact">
+                            <p class="push-down-20">
+                                <label for="name">نام<span class="red-clr bold">*</span></label>
+                                <input class="form-control" type="text" aria-required="true" tabindex="1" size="30"
+                                       value="" id="name"
+                                       name="name" required>
+                            </p>
+                            <p class="push-down-20">
+                                <label for="email">ایمیل<span class="red-clr bold">*</span></label>
+                                <input class="form-control" type="email" aria-required="true" tabindex="2" size="30"
+                                       value="" id="email"
+                                       name="email" required>
+                            </p>
+                            <p class="push-down-20">
+                                <label for="website">وبسایت</label>
+                                <input class="form-control" type="url" tabindex="3" size="30" value="" id="website"
+                                       name="website">
+                            </p>
+
+                            <p class="push-down-20">
+                                <label for="text">متن<span class="red-clr bold">*</span></label>
+                                <textarea class="input-block-level" tabindex="4" rows="7" cols="70" id="text"
+                                          name="text"
+                                          required></textarea>
+                            </p>
+                            <p>
+                                <button class="btn btn-primary bold" type="submit" tabindex="5" id="submit">ثبت تماس
+                                    باما
+                                </button>
+                            </p>
+                        </form>
+                    </section>
+
+                    <hr/>
+
+
+                </section> <!-- /main content -->
+
+            </div>
+        </div>
+    </div> <!-- /container -->
+{% endblock %}
+
+{% block JS %}
+    <script>
+        $("#contact_us_form").submit(function (e) {
+            e.preventDefault()
+
+            var name = $("#name").val()
+            var email = $("#email").val()
+            var website = $("#website").val()
+            var text = $("#text").val()
+
+            const data = {
+                'name': name,
+                'email': email,
+                'website': website ? website : null,
+                'text': text,
+            }
+
+            const csrftoken = getCookie('csrftoken')
+
+            $.ajax({
+                headers: {'X-CSRFToken': csrftoken},
+                url: "{% url 'contact_us' %}",
+                method: "POST",
+                data: data,
+                async: true,
+                success: function (data) {
+
+                    $("#name").val('')
+                    $("#email").val('')
+                    $("#website").val('')
+                    $("#text").val('')
+
+                    toastr.options = {
+                        "showDuration": "400",
+                        "positionClass": "toast-bottom-center",
+                        "progressBar": true,
+                    }
+                    toastr.success(data['detail']);
+                },
+                error: function (error) {
+                    const errors = JSON.parse(error.responseText)
+
+                    toastr.options = {
+                        "showDuration": "400",
+                        "positionClass": "toast-bottom-center",
+                        "progressBar": true,
+                    }
+                    toastr.options.positionClass = 'toast-bottom-center'
+
+                     toastr.error(errors['detail'])
+                }
+            });
+        })
+    </script>
+{% endblock %}

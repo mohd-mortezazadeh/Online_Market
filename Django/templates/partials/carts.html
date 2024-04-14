@@ -1,0 +1,65 @@
+{% load static %}
+{% load humanize %}
+{% load main %}
+
+<div id="carts_list" class="span3">
+    <div class="cart-container" id="cartContainer">
+        <div class="cart">
+            <p class="items">سبد خرید <span class="dark-clr">({{ user.carts.all | length }})</span></p>
+            <p class="dark-clr hidden-tablet">{{ user.id | cal_cart_sum }} تومان</p>
+            <a href="{% url 'carts-list' %}" class="btn btn-danger">
+                <i class="icon-shopping-cart"></i>
+            </a>
+        </div>
+        <div class="open-panel">
+
+            {% if user.carts.all %}
+                {% for item in user.carts.all %}
+                    <div class="item-in-cart clearfix">
+                        <div class="image">
+                            <img src="{{ item.product.original_image.url }}"
+                                 width="124" height="124"
+                                 alt="cart item"/>
+                        </div>
+                        <div class="desc">
+                            <strong><a
+                                    href="{% url 'product' slug=item.product.slug %}">{{ item.product.title }}</a></strong>
+                            <span class="light-clr qty">
+                                    تعداد : {{ item.count }}
+                                    &nbsp;
+                                    <a href="#" class="icon-remove-sign" title="Remove Item"></a>
+                                </span>
+                        </div>
+                        <div class="price">
+                            <strong>{{ item.product.price }}تومان </strong>
+                        </div>
+                    </div>
+                {% endfor %}
+            {% else %}
+                <p class="text-center">محصولی موجود نیست</p>
+            {% endif %}
+
+            <div class="summary" dir="rtl">
+                <div class="line">
+                    <div class="row-fluid">
+                        <div class="span6 align-right">{{ settings.transport_cost }} تومان</div>
+                        <div class="span6">هزینه ارسال :</div>
+                    </div>
+                </div>
+                <div class="line">
+                    <div class="row-fluid">
+                        <div class="span6 align-right size-16">{{ user.id | cal_cart_sum }} تومان</div>
+                        <div class="span6">جمع کل :</div>
+                    </div>
+                </div>
+            </div>
+            {% if user.carts.all %}
+                <div class="proceed">
+                    <a href="{% url 'carts-list' %}" class="btn btn-danger pull-right bold higher">
+                        مشاهده سبد خرید
+                        <i class="icon-shopping-cart"></i></a>
+                </div>
+            {% endif %}
+        </div>
+    </div>
+</div>

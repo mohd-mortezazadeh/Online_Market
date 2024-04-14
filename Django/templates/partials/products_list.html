@@ -1,0 +1,148 @@
+{% load humanize %}
+{% load main %}
+
+<section id="products_list" class="span9">
+
+    <!--  ==========  -->
+    <!--  = Title =  -->
+    <!--  ==========  -->
+    <div class="underlined push-down-20">
+        <div class="row">
+            <div class="span5">
+                {% if search %}
+                    <h3><span class="light">جستجو:</span> &quot;{{ search }}&quot;</h3>
+                {% else %}
+                    <h3><span class="light">همه</span> محصولات</h3>
+                {% endif %}
+            </div>
+            <div class="span4">
+                <div class="form-inline sorting-by" id="tourStep4">
+                    <label for="sorting" class="black-clr">چینش :</label>
+                    <select id="sorting" class="span3">
+                        <option {% if sorting == 'none' %} selected {% endif %} value='none'>هیچکدام
+                        </option>
+                        <option {% if sorting == 'price' %} selected {% endif %} value='price'>بر اساس قیمت (کم به
+                            زیاد) &uarr;
+                        </option>
+                        <option {% if sorting == '-price' %} selected {% endif %} value='-price'>بر اساس قیمت (زیاد
+                            به کم) &darr;
+                        </option>
+                        <option {% if sorting == 'title' %} selected {% endif %} value='title'>بر اساس نام (صعودی)
+                            &uarr;
+                        </option>
+                        <option {% if sorting == '-title' %} selected {% endif %} value='-title'>بر اساس نام (نزولی)
+                            &darr;
+                        </option>
+                        <option {% if sorting == 'likeCount' %} selected {% endif %} value='likeCount'>بر اساس محبوبیت
+                            (کم به زیاد) &uarr;
+                        </option>
+                        <option {% if sorting == '-likeCount' %} selected {% endif %} value='-likeCount'>بر اساس محبوبیت
+                            (زیاد به کم) &darr;
+                        </option>
+                    </select>
+                </div>
+            </div>
+        </div>
+    </div> <!-- /title -->
+
+    <!--  ==========  -->
+    <!--  = Products =  -->
+    <!--  ==========  -->
+    <div class="row popup-products">
+        <div id="isotopeContainer" class="isotope-container">
+
+            {% for item in products %}
+                <div class="span3 filter--blazers" data-price="1567" data-popularity="2"
+                     data-size="xs|s|m|xl" data-color="pink" data-brand="adidas">
+                    <div class="product">
+
+                        {% if forloop.counter <= 10 and item.count != 0 %}
+                            <div class="stamp green">جدید</div>
+                        {% elif item.count != 0 %}
+                            <div class="stamp green">موجود</div>
+                        {% else %}
+                            <div class="stamp red">تمام شد</div>
+                        {% endif %}
+
+                        <div class="product-img">
+                            <div class="picture">
+                                <img width="540" height="374" alt=""
+                                     src="{{ item.original_image.url }}"/>
+                                <div class="img-overlay">
+                                    <a class="btn more btn-primary"
+                                       href="{% url 'product' slug=item.slug %}">توضیحات بیشتر</a>
+                                    <a class="btn buy btn-danger" onclick="Submit_Cart({{ item.id }})">اضافه به سبد
+                                        خرید</a>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="main-titles no-margin">
+                            <h4 class="title">{{ item.price | intcomma }}</h4>
+                            <a href="{% url 'product' slug=item.slug %}"><h5
+                                    class="no-margin">{{ item.title }}</h5></a>
+                        </div>
+                        <p class="center-align stars">
+
+                            {% cal_stars item.stars as stars %}
+                            {% with ''|center:stars as stars_range %}
+                                {% for item in stars_range %}
+                                    <span class="icon-star stars-clr"></span>
+                                {% endfor %}
+                            {% endwith %}
+
+                            {% cal_unstars stars as unstars %}
+                            {% with ''|center:unstars as un_stars_range %}
+                                {% for item in un_stars_range %}
+                                    <span class="icon-star"></span>
+                                {% endfor %}
+                            {% endwith %}
+
+                        </p>
+                    </div>
+                </div>
+            {% endfor %}
+
+        </div>
+    </div>
+    <hr/>
+
+    {% if products.has_other_pages %}
+        <div class="pagination">
+            <ul class="mouse">
+                {% if products.has_previous %}
+                    <li onclick="Paginate({{ products.previous_page_number }})"><a class="btn btn-primary"><span
+                            class="icon-chevron-left"></span></a></li>
+                {% else %}
+                    <li class="disabled"><a class="btn btn-primary"><span
+                            class="icon-chevron-left"></span></a></li>
+                {% endif %}
+                {% for i in products.paginator.page_range %}
+                    {% if products.number == i %}
+                        <li class="active"><a class="disabled">{{ i }}</a></li>
+                    {% else %}
+                        <li onclick="Paginate({{ i }})"><a>{{ i }}</a></li>
+                    {% endif %}
+                {% endfor %}
+                {% if products.has_next %}
+                    <li onclick="Paginate({{ products.next_page_number }})"><a class="btn btn-primary"><span
+                            class="icon-chevron-right"></span></a></li>
+                {% else %}
+                    <li class="disabled"><a class="btn btn-primary"><span class="icon-chevron-right"></span></a></li>
+                {% endif %}
+            </ul>
+        </div>
+    {% endif %}
+
+</section>
+
+<style rel="stylesheet">
+    .mouse li:hover {
+        cursor: pointer;
+    }
+</style>
+
+<script>
+    $("#sorting").on('change', function () {
+        Filter()
+    })
+</script>

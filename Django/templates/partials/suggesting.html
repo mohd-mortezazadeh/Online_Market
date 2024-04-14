@@ -1,0 +1,14 @@
+{% load main %}
+
+{% if user.is_authenticated %}
+    <span id="suggesting">
+      &nbsp;
+    {% if user and user|is_user_suggested_product:product %}
+        <span onclick="Submit_Suggest()" class="btn btn-warning">دیگه خرید محصول رو پیشنهاد نمیدم</span>
+    {% else %}
+        <span onclick="Submit_Suggest()" class="btn btn-success">خرید محصول رو پیشنهاد میدم</span>
+    {% endif %}
+
+    ({{ product.suggests.count }})
+</span>
+{% endif %}
